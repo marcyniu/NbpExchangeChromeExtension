@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "NBP Exchange Rates",
+  "version": "1.0",
+  "description": "Chrome Extension to display currency exchange rates from NBP API.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.nbp.pl/*"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "popup/icon16.png",
+      "48": "popup/icon48.png",
+      "128": "popup/icon128.png"
+    }
+  }
+}

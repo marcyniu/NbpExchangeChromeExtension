@@ -1,0 +1,2 @@
+<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
+This is a Chrome Extension project. Use modern JavaScript and HTML/CSS for popup UI. Fetch currency exchange rates from NBP API based on this documentation: (https://api.nbp.pl/en.html).

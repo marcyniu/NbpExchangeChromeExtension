@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NBP Exchange Rates</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h2>NBP Exchange Rates</h2>
+  <div>
+    <label for="rateType">Type:</label>
+    <select id="rateType">
+      <option value="A">Table A</option>
+      <option value="B">Table B</option>
+      <option value="C">Table C</option>
+      <option value="single">Single Currency</option>
+    </select>
+  </div>
+  <div id="currencySelect" style="display:none;">
+    <label for="currency">Currency Code:</label>
+    <input type="text" id="currency" placeholder="e.g. USD">
+  </div>
+  <button id="fetchBtn">Fetch Rates</button>
+  <div id="result"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

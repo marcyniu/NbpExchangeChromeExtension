@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate Chrome Extension",
+      "type": "shell",
+      "command": "echo 'Validate manifest and popup files'",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
