@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const currencySelect = document.getElementById('currencySelect');
   const fetchBtn = document.getElementById('fetchBtn');
   const result = document.getElementById('result');
+  const dateInput = document.getElementById('date');
+
+  // Set date picker to current date
+  const today = new Date();
+  dateInput.value = today.toISOString().split('T')[0];
 
   rateType.addEventListener('change', function() {
     currencySelect.style.display = rateType.value === 'single' ? 'block' : 'none';
@@ -11,21 +16,34 @@ document.addEventListener('DOMContentLoaded', function() {
   fetchBtn.addEventListener('click', async function() {
     result.textContent = 'Loading...';
     let url = '';
+    const selectedDate = dateInput.value;
+    let data = null;
+    let html = '';
     if (rateType.value === 'single') {
       const currency = document.getElementById('currency').value;
       if (!currency) {
         result.textContent = 'Please select a currency code.';
         return;
       }
-      url = `https://api.nbp.pl/api/exchangerates/rates/A/${currency}/?format=json`;
+      url = `https://api.nbp.pl/api/exchangerates/rates/A/${currency}/${selectedDate}/?format=json`;
+      let response = await fetch(url);
+      if (!response.ok) {
+        // fallback to last available date
+        response = await fetch(`https://api.nbp.pl/api/exchangerates/rates/A/${currency}/last/1/?format=json`);
+      }
+      if (!response.ok) throw new Error('API error');
+      data = await response.json();
     } else {
-      url = `https://api.nbp.pl/api/exchangerates/tables/${rateType.value}/?format=json`;
+      url = `https://api.nbp.pl/api/exchangerates/tables/${rateType.value}/${selectedDate}/?format=json`;
+      let response = await fetch(url);
+      if (!response.ok) {
+        // fallback to last available date
+        response = await fetch(`https://api.nbp.pl/api/exchangerates/tables/${rateType.value}/last/1/?format=json`);
+      }
+      if (!response.ok) throw new Error('API error');
+      data = await response.json();
     }
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('API error');
-      const data = await response.json();
-      let html = '';
       // Helper: get flag emoji by currency code
       function getFlag(code, currencyName) {
         // Use currency code for all tables, including Table B (e.g., AFN, MGA, XPF, etc.)
