@@ -1,4 +1,44 @@
+// Dark mode logic
+function setDarkMode(isDark) {
+  if (isDark) {
+    document.documentElement.classList.add('dark');
+    document.getElementById('themeToggleLightIcon').classList.remove('hidden');
+    document.getElementById('themeToggleDarkIcon').classList.add('hidden');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.getElementById('themeToggleLightIcon').classList.add('hidden');
+    document.getElementById('themeToggleDarkIcon').classList.remove('hidden');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  const themeToggle = document.getElementById('themeToggle');
+
+  // Load saved theme preference from chrome.storage or fallback to matchMedia
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+    chrome.storage.sync.get(['darkMode'], function(result) {
+      // Default to system preference if not set
+      let isDark = result.darkMode;
+      if (isDark === undefined) {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      setDarkMode(isDark);
+    });
+  } else {
+    // Fallback for testing outside extension environment
+    let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(isDark);
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    const newMode = !isDark;
+    setDarkMode(newMode);
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+      chrome.storage.sync.set({ darkMode: newMode });
+    }
+  });
+
   const rateType = document.getElementById('rateType');
   const currencySelect = document.getElementById('currencySelect');
   const fetchBtn = document.getElementById('fetchBtn');
@@ -14,7 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   fetchBtn.addEventListener('click', async function() {
-    result.textContent = 'Loading...';
+    result.innerHTML = '<div class="flex justify-center items-center w-full py-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div></div>';
+    result.className = 'w-full';
     let url = '';
     const selectedDate = dateInput.value;
     let data = null;
@@ -230,38 +271,68 @@ document.addEventListener('DOMContentLoaded', function() {
       if (rateType.value === 'single') {
         // Single currency rate
         if (data && data.rates && data.rates.length > 0) {
-          html = `<div class='card'>
-            <div class='card-body p-2'>
-              <ul class='list-group list-group-flush'>
-                <li class='list-group-item px-2 py-1'><span style='font-size:1.2em;'>${getFlag(data.code, data.currency)}</span> <strong>${data.currency}</strong> <span class='text-muted'>(${data.code})</span></li>
-                <li class='list-group-item px-2 py-1'><strong>Date:</strong> ${data.rates[0].effectiveDate}</li>
-                <li class='list-group-item px-2 py-1'><strong>Rate:</strong> <span class='text-primary'>${data.rates[0].mid}</span></li>
-              </ul>
+          html = `<div class='bg-white dark:bg-slate-800 shadow rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 max-w-md mx-auto w-full'>
+            <div class='px-4 py-5 sm:p-6'>
+              <div class='flex items-center space-x-3 mb-4'>
+                <span class='text-3xl' role='img' aria-label='Flag'>${getFlag(data.code, data.currency)}</span>
+                <div>
+                  <h3 class='text-lg leading-6 font-medium text-slate-900 dark:text-slate-100'>${data.currency}</h3>
+                  <p class='text-sm text-slate-500 dark:text-slate-400'>${data.code}</p>
+                </div>
+              </div>
+              <div class='border-t border-slate-200 dark:border-slate-700 pt-4'>
+                <dl class='grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2'>
+                  <div class='sm:col-span-1'>
+                    <dt class='text-sm font-medium text-slate-500 dark:text-slate-400'>Date</dt>
+                    <dd class='mt-1 text-sm text-slate-900 dark:text-slate-100'>${data.rates[0].effectiveDate}</dd>
+                  </div>
+                  <div class='sm:col-span-1'>
+                    <dt class='text-sm font-medium text-slate-500 dark:text-slate-400'>Rate</dt>
+                    <dd class='mt-1 text-2xl font-semibold text-blue-600 dark:text-blue-400'>${data.rates[0].mid}</dd>
+                  </div>
+                </dl>
+              </div>
             </div>
           </div>`;
         } else {
-          html = '<div class="text-danger">No data found for this currency.</div>';
+          html = '<div class="text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800 text-center">No data found for this currency.</div>';
         }
       } else {
         // Table of rates
         if (Array.isArray(data) && data.length > 0 && data[0].rates) {
-          html = `<div class='card'>
-            <div class='card-body'>
-              <h5 class='card-title'>Table ${data[0].table} (${data[0].effectiveDate})</h5>
-              <div class='table-responsive'><table class='table table-sm table-bordered'>
-                <thead><tr><th>Flag</th><th>Currency</th><th>Code</th><th>Rate</th></tr></thead>
-                <tbody>`;
+          html = `<div class='bg-white dark:bg-slate-800 shadow rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 w-full'>
+            <div class='px-4 py-5 sm:px-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center'>
+              <h3 class='text-lg leading-6 font-medium text-slate-900 dark:text-slate-100'>Table ${data[0].table}</h3>
+              <span class='text-sm text-slate-500 dark:text-slate-400'>${data[0].effectiveDate}</span>
+            </div>
+            <div class='overflow-x-auto'>
+              <table class='min-w-full divide-y divide-slate-200 dark:divide-slate-700'>
+                <thead class='bg-slate-50 dark:bg-slate-800/50'>
+                  <tr>
+                    <th scope='col' class='px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16'>Flag</th>
+                    <th scope='col' class='px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider'>Currency</th>
+                    <th scope='col' class='px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-24'>Code</th>
+                    <th scope='col' class='px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-32'>Rate</th>
+                  </tr>
+                </thead>
+                <tbody class='bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700'>`;
           data[0].rates.forEach(rate => {
-            html += `<tr><td>${getFlag(rate.code, rate.currency)}</td><td>${rate.currency}</td><td>${rate.code}</td><td>${rate.mid !== undefined ? rate.mid : (rate.bid !== undefined ? rate.bid : (rate.ask !== undefined ? rate.ask : ''))}</td></tr>`;
+            const val = rate.mid !== undefined ? rate.mid : (rate.bid !== undefined ? `${rate.bid} / ${rate.ask}` : '');
+            html += `<tr class='hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors'>
+              <td class='px-6 py-4 whitespace-nowrap text-xl text-center'>${getFlag(rate.code, rate.currency)}</td>
+              <td class='px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-100'>${rate.currency}</td>
+              <td class='px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono'>${rate.code}</td>
+              <td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400 text-right'>${val}</td>
+            </tr>`;
           });
-          html += '</tbody></table></div></div></div>';
+          html += '</tbody></table></div></div>';
         } else {
-          html = '<div class="text-danger">No table data found.</div>';
+          html = '<div class="text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800 text-center">No table data found.</div>';
         }
       }
       result.innerHTML = html;
     } catch (e) {
-      result.innerHTML = '<div class="text-danger">Error fetching data.</div>';
+      result.innerHTML = '<div class="text-red-600 dark:text-red-400 p-4 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800 text-center">Error fetching data. Check your connection or API availability.</div>';
     }
   });
 });

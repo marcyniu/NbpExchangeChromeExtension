@@ -1,0 +1,25 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "This Chrome Extension allows users to fetch and display currency exchange rates from the NBP API. Users can select to view individual currency rates or entire exchange rate tables.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcyniu/NbpExchangeChromeExtension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/marcyniu/NbpExchangeChromeExtension/issues"
+  },
+  "homepage": "https://github.com/marcyniu/NbpExchangeChromeExtension#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "tailwindcss": "^4.2.2"
+  }
+}
