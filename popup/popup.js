@@ -309,20 +309,20 @@ document.addEventListener('DOMContentLoaded', function() {
               <table class='min-w-full divide-y divide-slate-200 dark:divide-slate-700'>
                 <thead class='bg-slate-50 dark:bg-slate-800/50'>
                   <tr>
-                    <th scope='col' class='px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16'>Flag</th>
-                    <th scope='col' class='px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider'>Currency</th>
-                    <th scope='col' class='px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-24'>Code</th>
-                    <th scope='col' class='px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-32'>Rate</th>
+                    <th scope='col' class='px-3 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16'>Flag</th>
+                    <th scope='col' class='px-3 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider'>Currency</th>
+                    <th scope='col' class='px-3 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-24'>Code</th>
+                    <th scope='col' class='px-3 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-32'>Rate</th>
                   </tr>
                 </thead>
                 <tbody class='bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700'>`;
           data[0].rates.forEach(rate => {
             const val = rate.mid !== undefined ? rate.mid : (rate.bid !== undefined ? `${rate.bid} / ${rate.ask}` : '');
             html += `<tr class='hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors'>
-              <td class='px-6 py-4 whitespace-nowrap text-xl text-center'>${getFlag(rate.code, rate.currency)}</td>
-              <td class='px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-100'>${rate.currency}</td>
-              <td class='px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono'>${rate.code}</td>
-              <td class='px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400 text-right'>${val}</td>
+              <td class='px-3 py-4 whitespace-nowrap text-xl text-center'>${getFlag(rate.code, rate.currency)}</td>
+              <td class='px-3 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-100'>${rate.currency}</td>
+              <td class='px-3 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 font-mono'>${rate.code}</td>
+              <td class='px-3 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400 text-right'>${val}</td>
             </tr>`;
           });
           html += '</tbody></table></div></div>';
